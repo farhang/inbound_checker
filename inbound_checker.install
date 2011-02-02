@@ -1,0 +1,54 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Contains un/installation hook implementations.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function inbound_checker_install() {
+  drupal_install_schema('inbound_checker');
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function inbound_checker_uninstall() {
+  drupal_uninstall_schema('inbound_checker');
+}
+
+/**
+ * Implements of hook_schema
+ */
+function inbound_checker_schema() {
+  $schema['inbound_checker'] = array(
+    'fields' => array(
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'site_adres' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'site_name' => array(
+        'type' => 'varchar',
+        'length' => 70,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+

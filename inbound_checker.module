@@ -1,0 +1,71 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Contains necessary hook implementations, callbacks & helpers.
+ */
+
+/**
+ * Implements hook_perm().
+ */
+function inbound_checker_perm() {
+  return array(
+    'administer inbound cheker',
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function inbound_checker_menu() {
+  $items = array();
+  $items['admin/content/inbound_link_site/add'] = array(
+    'title' => 'Add site for checking links',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inbound_checker_form_submit_site'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+
+/**
+ * Generates a form for get the address of the websites
+ **/
+function inbound_checker_form_submit_site() {
+  $form['website_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website address'),
+    '#description' => t('example:‌ http://www.minyatoor.com'),
+    '#required' => TRUE,
+  );
+  $form['website_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website name'),
+    '#required' => TRUE,
+  );
+  $form['op'] = array(
+    '#type' => 'submit',
+    '#value' => 'Check and add',
+  );
+  return $form;
+}
+
+function inbound_checker_form_submit_site_validate($form, &$form_state) {
+  if (isset($form_state['values']['website_address']))
+    if(!preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $form_state['values']['website_address'])) {
+        form_set_error($form_state['values']['website_address'], t('Please enter the valid url.'));
+    }
+}
+
+function inbound_checker_form_submit_site_submit($form, &$form_state) {
+  dpm('sdoakfsduaofpoisahd');
+  db_query("INSERT INTO {inbound_checker} id = %d, site_adres = %s, site_name = %s) VALUES (1, '33','55')");
+  drupal_set_message(t('Entry has been created.'));
+
+}
+
