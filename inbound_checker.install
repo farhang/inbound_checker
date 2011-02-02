@@ -28,12 +28,11 @@ function inbound_checker_schema() {
   $schema['inbound_checker'] = array(
     'fields' => array(
       'id' => array(
-        'type' => 'int',
+        'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => 0,
       ),
-      'site_adres' => array(
+      'site_address' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -45,6 +44,13 @@ function inbound_checker_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'link_num' => array(
+        'description' => 'Number of links and if 0 link not exists',
+        'type' => 'int',
+        'not null' => TRUE,
+        'length' => 4,
+      ),
+
     ),
     'primary key' => array('id'),
   );

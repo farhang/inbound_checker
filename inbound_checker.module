@@ -20,16 +20,48 @@ function inbound_checker_perm() {
  */
 function inbound_checker_menu() {
   $items = array();
-  $items['admin/content/inbound_link_site/add'] = array(
-    'title' => 'Add site for checking links',
+
+  $items['admin/reports/inbound-links'] =
+  $items['admin/reports/inbound-links/sites'] = array(
+    'title' => 'Site reports',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('inbound_checker_form_submit_site'),
     'access callback' => 'user_access',
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array('administer inbound cheker'),
     'type' => MENU_NORMAL_ITEM,
+    'weight' => 1,
   );
 
+  $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK;
+
+  $items['admin/reports/inbound-links/settings'] = array(
+    'title' => 'Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inbound_checker_settings'),
+    'access arguments' => array('administer inbound cheker'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+
+
+
   return $items;
+}
+
+/**
+ * Generates a inbound ad settings page
+ **/
+function inbound_checker_settings() {
+ $form = array();
+
+ $form['inbound_checker_keyword'] = array(
+    '#type' => 'textfield',
+    '#default_value' => variable_get('inbound_checker_keyword', ''),
+    '#title' => t('keyword'),
+    '#description' => t('e.g.‌ www.example.com'),
+    '#required' => TRUE,
+  );
+  return system_settings_form($form);
 }
 
 
@@ -37,21 +69,28 @@ function inbound_checker_menu() {
  * Generates a form for get the address of the websites
  **/
 function inbound_checker_form_submit_site() {
+  $form = array();
+
+  $form['#prefix'] = _inbound_checker_sites_table();
+
   $form['website_address'] = array(
     '#type' => 'textfield',
     '#title' => t('Website address'),
     '#description' => t('example:‌ http://www.minyatoor.com'),
     '#required' => TRUE,
   );
+
   $form['website_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Website name'),
     '#required' => TRUE,
   );
+
   $form['op'] = array(
     '#type' => 'submit',
     '#value' => 'Check and add',
   );
+
   return $form;
 }
 
@@ -63,9 +102,34 @@ function inbound_checker_form_submit_site_validate($form, &$form_state) {
 }
 
 function inbound_checker_form_submit_site_submit($form, &$form_state) {
-  dpm('sdoakfsduaofpoisahd');
-  db_query("INSERT INTO {inbound_checker} id = %d, site_adres = %s, site_name = %s) VALUES (1, '33','55')");
+  $sitecontent = file_get_contents($form_state['values']['website_address']);
+  $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
+  db_query("INSERT INTO {inbound_checker} (site_address, site_name, link_num) VALUES ('%s', '%s', %d)", array(
+    $form_state['values']['website_address'],
+    $form_state['values']['website_name'],
+    $link_num,
+  ));
   drupal_set_message(t('Entry has been created.'));
 
+}
+
+function _inbound_checker_sites_table() {
+  $rows = array();
+  $header = array(
+    t('id'),
+    t('Site name'),
+    t('Site address'),
+  );
+
+  $results = db_query("SELECT * FROM {inbound_checker}");
+  while ($result = db_fetch_object($results)) {
+    $rows[] = array(
+      $result->id,
+      $result->site_name,
+      $result->site_address,
+    );
+  }
+
+  return theme('table', $header, $rows);
 }
 
