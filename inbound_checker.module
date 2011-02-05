@@ -4,6 +4,8 @@
 /**
  * @file
  * Contains necessary hook implementations, callbacks & helpers.
+ *
+ * @todo Implement hook_help().
  */
 
 /**
@@ -130,6 +132,8 @@ function _inbound_checker_sites_table() {
  *
  * @param $result
  *   Site info object.
+ *
+ * @todo Rename!!
  */
 function _inbound_checker_get_links_with_batch($result) {
   // TODO: Check the logic.
