@@ -52,7 +52,9 @@ function inbound_checker_form_add() {
   $form['inbound_checker_site_expiry'] = array(
     '#type' => 'date',
     '#title' => t('Expiry date'),
-    '#description' => t('If this link is inbound ad link you can input expiry date for notify\'s you when the ad was expire.'),
+    '#description' => t('Specify the date in which your subscription (if any) will be expired.'),
+    // Alter the year range.
+    '#after_build' => array('_inbound_checker_date_after_build'),
   );
 
   $form['op'] = array(
@@ -151,5 +153,24 @@ function inbound_checker_form_list_submit($form, &$form_state) {
   }
   batch_set($batch);
 
+}
+
+/**
+ * Date field after_build callback to workaround the date field stupid limitation.
+ *
+ * @param $form_element
+ *   Date field element.
+ * @param $form_state
+ *   State of the form array.
+ *
+ * @return
+ *   Updated $form_element.
+ *
+ * @see expand_date()
+ */
+function _inbound_checker_date_after_build($form_element, &$form_state) {
+  $now = format_date(time(), 'custom', 'Y');
+  $form_element['year']['#options'] = drupal_map_assoc(range($now, $now + 5));
+  return $form_element;
 }
 
