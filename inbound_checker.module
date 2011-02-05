@@ -99,6 +99,12 @@ function inbound_checker_form_site_add() {
     '#required' => TRUE,
   );
 
+  $form['ad_date_expire'] = array(
+    '#type' => 'date',
+    '#title' => t('Expiry date'),
+    '#description' => t('If this link is inbound ad link you can input expiry date for notify\'s you when the ad was expire.'),
+  );
+
   $form['op'] = array(
     '#type' => 'submit',
     '#value' => t('Add'),
@@ -113,19 +119,19 @@ function inbound_checker_form_site_add() {
 function inbound_checker_form_site_add_validate($form, &$form_state) {
   $site_address = $form_state['values']['website_address'];
   if ($form_state['values']['website_name']) {
-    $pos = strpos($form_state['values']['website_name'],'<');
-    if(!empty($pos)) {
+    $pos = strpos($form_state['values']['website_name'], '<');
+    if (!empty($pos)) {
       form_set_error($form_state['values']['website_name'], t('Please enter the valid name.'));
-   }
+    }
   }
 
   if (isset($site_address)) {
-    if(!preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $site_address)) {
+    if (!preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $site_address)) {
         form_set_error($site_address, t('Please enter the valid url.'));
     }
   }
 
-  $results = db_query("SELECT * FROM {inbound_checker} WHERE site_address = '%s'", array ($site_address));
+  $results = db_query("SELECT * FROM {inbound_checker} WHERE site_address = '%s'", array($site_address));
   $result = db_fetch_object($results);
   if ($result) {
     form_set_error($site_address, t('Your url already existes.'));
@@ -139,6 +145,7 @@ function inbound_checker_form_site_add_submit($form, &$form_state) {
   $link = new stdClass();
   $link->site_name = $form_state['values']['website_name'];
   $link->site_address = $form_state['values']['website_address'];
+  $link->expire_date = $form_state['values']['ad_date_expire'];
   _inbound_checker_site_save($link);
   drupal_set_message(t('Entry has been created.'));
 }
@@ -205,7 +212,7 @@ function inbound_checker_form_list() {
     '#type' => 'checkbox',
     '#title' => t('Refresh zero links.'),
     '#description' => 'Check only 0 link numbers.',
-    '#default_value'=> 1,
+    '#default_value' => 1,
     '#return_value' => 1,
   );
 
@@ -220,7 +227,7 @@ function inbound_checker_form_list() {
 /**
  * Submission callback for sites list form.
  */
-function inbound_checker_form_list_submit($form, &$form_state){
+function inbound_checker_form_list_submit($form, &$form_state) {
   $results = db_query("SELECT * FROM {inbound_checker}");
   $batch = array(
     'title' => t('get links...'),
