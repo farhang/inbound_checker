@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Contains form definition, validation and submission callbacks.
+ * Contains Drupal form API callbacks.
  */
 
 /**
@@ -67,7 +67,7 @@ function inbound_checker_form_add() {
  * Validation callback for site add form.
  */
 function inbound_checker_form_add_validate($form, &$form_state) {
-  // TODO: Check the logic.
+  // TODO: Check the logic. Assigned to @sepehr.
 
   if ($form_state['values']['inbound_checker_site_name']) {
     $pos = strpos($form_state['values']['inbound_checker_site_name'], '<');
@@ -133,7 +133,7 @@ function inbound_checker_form_list() {
  * Submission callback for sites list form.
  */
 function inbound_checker_form_list_submit($form, &$form_state) {
-  // TODO: Check the logic.
+  // TODO: Check the logic. Assigned to @sepehr.
   // TODO: Complete the $batch array.
 
   $results = db_query("SELECT * FROM {inbound_checker}");
