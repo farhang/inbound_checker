@@ -12,7 +12,7 @@
  * @ingroup forms
  * @see system_settings_form()
  */
-function inbound_checker_settings() {
+function inbound_checker_form_settings() {
   $form = array();
 
   $form['inbound_checker_keyword'] = array(
@@ -31,12 +31,13 @@ function inbound_checker_settings() {
  *
  * @ingroup forms
  */
-function inbound_checker_form_site_add() {
+function inbound_checker_form_add() {
   $form = array();
 
   $form['inbound_checker_site_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Website name'),
+    '#description' => t('Name of the external website you wish to check.'),
     '#required' => TRUE,
   );
 
@@ -65,7 +66,7 @@ function inbound_checker_form_site_add() {
 /**
  * Validation callback for site add form.
  */
-function inbound_checker_form_site_add_validate($form, &$form_state) {
+function inbound_checker_form_add_validate($form, &$form_state) {
   // TODO: Check the logic.
 
   if ($form_state['values']['inbound_checker_site_name']) {
@@ -92,7 +93,7 @@ function inbound_checker_form_site_add_validate($form, &$form_state) {
 /**
  * Submission callback for site add form.
  */
-function inbound_checker_form_site_add_submit($form, &$form_state) {
+function inbound_checker_form_add_submit($form, &$form_state) {
   $link = new stdClass();
   $link->site_name = $form_state['values']['inbound_checker_site_name'];
   $link->site_address = $form_state['values']['inbound_checker_site_address'];
