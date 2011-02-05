@@ -53,7 +53,7 @@ function inbound_checker_menu() {
 }
 
 /**
- * Implements of hook_cron().
+ * Implementation of hook_cron().
  */
 function inbound_checker_cron() {
   inbound_checker_form_list_submit($form, &$form_state);
@@ -145,7 +145,7 @@ function inbound_checker_form_site_add_submit($form, &$form_state) {
   $link = new stdClass();
   $link->site_name = $form_state['values']['website_name'];
   $link->site_address = $form_state['values']['website_address'];
-  $link->expire_date = $form_state['values']['ad_date_expire'];
+  $link->expire_date = mktime(date('H'), date('i'), date('s'), $form_state['values']['ad_date_expire']['month'], $form_state['values']['ad_date_expire']['day'], $form_state['values']['ad_date_expire']['year']);
   _inbound_checker_site_save($link);
   drupal_set_message(t('Entry has been created.'));
 }
@@ -176,18 +176,23 @@ function _inbound_checker_sites_table() {
     t('Site name'),
     t('Site address'),
     t('Number of links'),
+    t('Expire date'),
   );
 
   $results = db_query("SELECT * FROM {inbound_checker}");
   $link_class = '';
   while ($result = db_fetch_object($results)) {
     $class = ($result->link_num > 0) ? 'ok' : 'warning';
+    if ($result->expire_date < time()) {
+      $class = 'error';
+    }
     $rows[] = array(
       'data' => array(
         (int) $result->id,
         check_plain($result->site_name),
         check_plain($result->site_address),
         check_plain($result->link_num),
+        check_plain(format_date($result->expire_date)),
       ),
       'class' => $class,
 
@@ -252,6 +257,7 @@ function inbound_checker_form_list_submit($form, &$form_state) {
  */
 function _inbound_checker_get_links_with_batch($result) {
   $sitecontent = file_get_contents($result->site_address);
+
   $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
   db_query("UPDATE {inbound_checker} SET link_num = %d WHERE site_address = '%s'", array(
     $link_num,
@@ -259,3 +265,4 @@ function _inbound_checker_get_links_with_batch($result) {
     )
   );
 }
+
