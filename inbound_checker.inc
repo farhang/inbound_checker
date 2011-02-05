@@ -88,7 +88,13 @@ function inbound_checker_form_add_validate($form, &$form_state) {
   $result = db_fetch_object($results);
   if ($result) {
     form_set_error('inbound_checker_site_address', t('Your url already existes.'));
-  }
+  }  $batch = array(
+    'operations' => array(),
+    'title' => t('Bulk SMS Sending...'),
+    'init_message' => t('Dispatching bulk SMS send operation...'),
+    'error_message' => t('An error occured while sending bulk SMS messages.'),
+    'progress_message' => t('@current out of @total messages has been sent, @remaining remaining. (@percentage%)'),
+  );
 }
 
 /**
@@ -139,14 +145,17 @@ function inbound_checker_form_list() {
  */
 function inbound_checker_form_list_submit($form, &$form_state) {
   // TODO: Check the logic. Assigned to @sepehr.
-  // TODO: Complete the $batch array.
 
-  $results = db_query("SELECT * FROM {inbound_checker}");
   $batch = array(
-    'title' => t('get links...'),
     'operations' => array(),
-    'finished' => 'my_finished_callback', // TODO: Remove!!!
+    'title' => t('Inbound Links Checking...'),
+    'init_message' => t('Initializing inbound link checking...'),
+    'error_message' => t('An error occured while checking inbound links.'),
+    'progress_message' => t('@current out of @total links has been checked, @remaining remaining. (@percentage%)'),
   );
+
+  // TODO: Use module's API.
+  $results = db_query("SELECT * FROM {inbound_checker}");
 
   while ($result = db_fetch_object($results)) {
     // TODO: Check $form_state['values'] instead.
@@ -154,8 +163,8 @@ function inbound_checker_form_list_submit($form, &$form_state) {
       $batch['operations'][] = array('_inbound_checker_get_links_with_batch', array($result)); //TODO: Rename batch helper.
     }
   }
-  batch_set($batch);
 
+  batch_set($batch);
 }
 
 /**
