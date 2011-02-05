@@ -1,5 +1,5 @@
 ; $Id$
 name = "Inbound link checker"
-description = "this module created for check inboundlink to the drupal website"
+description = "this module created for check inboundlink to your site with"
 core = 6.x
 

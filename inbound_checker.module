@@ -23,28 +23,32 @@ function inbound_checker_menu() {
 
   $items['admin/reports/inbound-links'] =
   $items['admin/reports/inbound-links/sites'] = array(
-    'title' => 'Site reports',
+    'title' => 'Sites list',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('inbound_checker_form_submit_site'),
-    'access callback' => 'user_access',
+    'page arguments' => array('inbound_checker_form_list'),
     'access arguments' => array('administer inbound cheker'),
     'type' => MENU_NORMAL_ITEM,
     'weight' => 1,
   );
 
   $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK;
-
   $items['admin/reports/inbound-links/settings'] = array(
     'title' => 'Settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('inbound_checker_settings'),
     'access arguments' => array('administer inbound cheker'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 2,
+    'weight' => 3,
   );
 
-
-
+  $items['admin/reports/inbound-links/add'] = array(
+    'title' => 'Add site',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inbound_checker_form_site_add'),
+    'access arguments' => array('administer inbound cheker'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
   return $items;
 }
 
@@ -68,17 +72,8 @@ function inbound_checker_settings() {
 /**
  * Generates a form for get the address of the websites
  **/
-function inbound_checker_form_submit_site() {
+function inbound_checker_form_site_add() {
   $form = array();
-
-  $form['#prefix'] = _inbound_checker_sites_table();
-
-  $form['website_address'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Website address'),
-    '#description' => t('example:‌ http://www.minyatoor.com'),
-    '#required' => TRUE,
-  );
 
   $form['website_name'] = array(
     '#type' => 'textfield',
@@ -86,50 +81,157 @@ function inbound_checker_form_submit_site() {
     '#required' => TRUE,
   );
 
+  $form['website_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website address'),
+    '#description' => t('example:‌ http://www.example.com'),
+    '#required' => TRUE,
+  );
+
   $form['op'] = array(
     '#type' => 'submit',
-    '#value' => 'Check and add',
+    '#value' => t('Add'),
   );
 
   return $form;
 }
 
-function inbound_checker_form_submit_site_validate($form, &$form_state) {
-  if (isset($form_state['values']['website_address']))
-    if(!preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $form_state['values']['website_address'])) {
-        form_set_error($form_state['values']['website_address'], t('Please enter the valid url.'));
+/**
+ *
+ */
+function inbound_checker_form_site_add_validate($form, &$form_state) {
+  $site_address = $form_state['values']['website_address'];
+  if ($form_state['values']['website_name']) {
+    $pos = strpos($form_state['values']['website_name'],'<');
+    if(!empty($pos)) {
+      form_set_error($form_state['values']['website_name'], t('Please enter the valid name.'));
+   }
+  }
+
+  if (isset($site_address)) {
+    if(!preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $site_address)) {
+        form_set_error($site_address, t('Please enter the valid url.'));
     }
+  }
+
+  $results = db_query("SELECT * FROM {inbound_checker} WHERE site_address = '%s'", array ($site_address));
+  $result = db_fetch_object($results);
+  if ($result) {
+    form_set_error($site_address, t('Your url already existes.'));
+  }
 }
 
-function inbound_checker_form_submit_site_submit($form, &$form_state) {
-  $sitecontent = file_get_contents($form_state['values']['website_address']);
-  $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
-  db_query("INSERT INTO {inbound_checker} (site_address, site_name, link_num) VALUES ('%s', '%s', %d)", array(
-    $form_state['values']['website_address'],
-    $form_state['values']['website_name'],
-    $link_num,
-  ));
+/**
+ *
+ */
+function inbound_checker_form_site_add_submit($form, &$form_state) {
+  $link = new stdClass();
+  $link->site_name = $form_state['values']['website_name'];
+  $link->site_address = $form_state['values']['website_address'];
+  _inbound_checker_site_save($link);
   drupal_set_message(t('Entry has been created.'));
-
 }
 
+/**
+ * Insert an objext to the inbound_checker database
+ */
+function _inbound_checker_site_save($link) {
+  $site = (object) $site;
+  drupal_write_record('inbound_checker', $link);
+}
+
+/**
+ *
+ */
 function _inbound_checker_sites_table() {
   $rows = array();
   $header = array(
     t('id'),
     t('Site name'),
     t('Site address'),
+    t('Number of links'),
   );
 
   $results = db_query("SELECT * FROM {inbound_checker}");
+  $link_class = '';
   while ($result = db_fetch_object($results)) {
+    $class = ($result->link_num > 0) ? 'ok' : 'warning';
     $rows[] = array(
-      $result->id,
-      $result->site_name,
-      $result->site_address,
+      'data' => array(
+        (int) $result->id,
+        check_plain($result->site_name),
+        check_plain($result->site_address),
+        check_plain($result->link_num),
+      ),
+      'class' => $class,
+
     );
   }
 
-  return theme('table', $header, $rows);
+  if (empty($rows)) {
+    return t('Nothing to show, Add your website in "Add site" tab.');
+  }
+  else {
+    return theme('table', $header, $rows);
+  }
+}
+
+/**
+ *
+ */
+function inbound_checker_form_list() {
+  $form = array();
+  $form['#prefix'] = _inbound_checker_sites_table();
+  $form['only-new'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Refresh zero links.'),
+    '#description' => 'Check only 0 link numbers.',
+    '#default_value'=> 1,
+    '#return_value' => 1,
+  );
+
+  $form['ops'] = array(
+    '#type' => 'submit',
+    '#value' => t('Calculate Again'),
+  );
+
+  return $form;
+}
+
+/**
+ *
+ */
+function inbound_checker_form_list_submit($form, &$form_state){
+  $results = db_query("SELECT * FROM {inbound_checker}");
+  $batch = array(
+    'title' => t('get links...'),
+    'operations' => array(),
+    'finished' => 'my_finished_callback',
+  );
+
+  while ($result = db_fetch_object($results)) {
+    if (($result->link_num == 0 && $form_state['clicked_button']['#post']['only-new']) || (!$form_state['clicked_button']['#post']['only-new'])) {
+      $batch['operations'][] = array('_inbound_checker_get_links_with_batch', array($result));
+    }
+  }
+  batch_set($batch);
+
+}
+
+function _inbound_checker_get_links_with_batch($result) {
+  $sitecontent = file_get_contents($result->site_address);
+  $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
+  db_query("UPDATE {inbound_checker} SET link_num = %d WHERE site_address = '%s'", array(
+    $link_num,
+    $result->site_address,
+    )
+  );
+}
+
+/**
+ * Implements of hook_cron
+ */
+function inbound_checker_cron() {
+  inbound_checker_form_list_submit($form, &$form_state);
 }
 
