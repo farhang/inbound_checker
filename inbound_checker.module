@@ -22,7 +22,7 @@ function inbound_checker_menu() {
   $items['admin/reports/inbound-links'] =
   $items['admin/reports/inbound-links/sites'] = array(
     'title' => 'Inbound Links',
-    'description' => 'A list of inbound links reports.',
+    'description' => 'A report of website inbound links.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('inbound_checker_form_list'),
     'access arguments' => array('administer inbound cheker'),
@@ -44,6 +44,7 @@ function inbound_checker_menu() {
 
   $items['admin/reports/inbound-links/settings'] = array(
     'title' => 'Settings',
+    'description' => 'Inbound link checker configuration settings.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('inbound_checker_settings'),
     'access arguments' => array('administer inbound cheker'),
