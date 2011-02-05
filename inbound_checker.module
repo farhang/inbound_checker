@@ -37,7 +37,7 @@ function inbound_checker_menu() {
   $items['admin/reports/inbound-links/add'] = array(
     'title' => 'Add site',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('inbound_checker_form_site_add'),
+    'page arguments' => array('inbound_checker_form_add'),
     'access arguments' => array('administer inbound cheker'),
     'file' => 'inbound_checker.inc',
     'type' => MENU_LOCAL_TASK,
@@ -48,7 +48,7 @@ function inbound_checker_menu() {
     'title' => 'Settings',
     'description' => 'Inbound link checker configuration settings.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('inbound_checker_settings'),
+    'page arguments' => array('inbound_checker_form_settings'),
     'access arguments' => array('administer inbound cheker'),
     'file' => 'inbound_checker.inc',
     'type' => MENU_LOCAL_TASK,
