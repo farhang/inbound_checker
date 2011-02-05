@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Contains Drupal form API callbacks.
+ * Contains Drupal form API callbacks & helpers.
  */
 
 /**
@@ -48,7 +48,6 @@ function inbound_checker_form_add() {
     '#required' => TRUE,
   );
 
-  // TODO: Remove past years from the dropdown.
   $form['inbound_checker_site_expiry'] = array(
     '#type' => 'date',
     '#title' => t('Expiry date'),
@@ -94,16 +93,19 @@ function inbound_checker_form_add_validate($form, &$form_state) {
 
 /**
  * Submission callback for site add form.
+ *
+ * @see _inbound_checker_site_save()
  */
 function inbound_checker_form_add_submit($form, &$form_state) {
   $link = new stdClass();
   $link->site_name = $form_state['values']['inbound_checker_site_name'];
   $link->site_address = $form_state['values']['inbound_checker_site_address'];
+  $link->expiry = _inbound_checker_mktime($form_state['values']['inbound_checker_site_expiry']);
 
-  // TODO: Define a helper function to convert date element value into its timestamp.
-  // TODO: Code format.
-  $link->expiry = mktime(date('H'), date('i'), date('s'), $form_state['values']['inbound_checker_site_expiry']['month'], $form_state['values']['inbound_checker_site_expiry']['day'], $form_state['values']['inbound_checker_site_expiry']['year']);
+  // Saves the inbound link.
   _inbound_checker_site_save($link);
+
+  // Notify.
   drupal_set_message(t('Website entry has been successfully created.'));
 }
 
@@ -111,10 +113,11 @@ function inbound_checker_form_add_submit($form, &$form_state) {
  * Form callback sites list page.
  */
 function inbound_checker_form_list() {
-  // TODO: Move to forms section.
-
   $form = array();
+
+  // Inject themed table of available sites.
   $form['#prefix'] = _inbound_checker_sites_table();
+
   $form['inbound_checker_check_zeros'] = array(
     '#type' => 'checkbox',
     '#title' => t('Refresh zero links.'),
@@ -172,5 +175,29 @@ function _inbound_checker_date_after_build($form_element, &$form_state) {
   $now = format_date(time(), 'custom', 'Y');
   $form_element['year']['#options'] = drupal_map_assoc(range($now, $now + 5));
   return $form_element;
+}
+
+/**
+ * Helper function aasdasd a timestamp from date and time form elements.
+ *
+ * @param $date_element
+ *   An array of form date element:
+ *   - year
+ *   - month
+ *   - day
+ *
+ * @param $time_element
+ *   24-format hour integer.
+ *
+ * @return
+ *   Corresponding timestamp.
+ */
+function _inbound_checker_mktime($date_element, $time_element = 0) {
+  return mktime(
+    (int) $time_element, 0, 0,
+    (int) $date_element['month'],
+    (int) $date_element['day'],
+    (int) $date_element['year']
+  );
 }
 
