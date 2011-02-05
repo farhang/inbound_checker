@@ -28,37 +28,40 @@ function inbound_checker_schema() {
 
   $schema['inbound_checker'] = array(
     'fields' => array(
-      'id' => array(
+      'icid' => array(
+        'description' => 'Primary identifier for a externak site record.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
       'site_address' => array(
+        'description' => 'URL of the external site.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ),
       'site_name' => array(
+        'description' => 'Name of the external site.',
         'type' => 'varchar',
         'length' => 70,
         'not null' => TRUE,
         'default' => '',
       ),
-      'link_num' => array(
-        'description' => 'Number of links and if 0 link not exists',
+      'count' => array(
+        'description' => 'Number of targets found on the external site address.',
         'type' => 'int',
         'not null' => TRUE,
         'length' => 4,
       ),
-      'expire_date' => array(
+      'expiry' => array(
         'description' => 'Expire date for links',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0
       ),
     ),
-    'primary key' => array('id'),
+    'primary key' => array('icid'),
   );
 
   return $schema;
