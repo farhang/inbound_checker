@@ -17,8 +17,8 @@ function inbound_checker_install() {
  * Implements hook_uninstall().
  */
 function inbound_checker_uninstall() {
+  variable_del('inbound_checker_keyword');
   drupal_uninstall_schema('inbound_checker');
-  // TODO: Delete defined variables.
 }
 
 /**
