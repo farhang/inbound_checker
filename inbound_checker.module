@@ -29,8 +29,16 @@ function inbound_checker_menu() {
     'type' => MENU_NORMAL_ITEM,
     'weight' => 1,
   );
-
   $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK;
+
+  $items['admin/reports/inbound-links/add'] = array(
+    'title' => 'Add site',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inbound_checker_form_site_add'),
+    'access arguments' => array('administer inbound cheker'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
 
   $items['admin/reports/inbound-links/settings'] = array(
     'title' => 'Settings',
@@ -41,14 +49,6 @@ function inbound_checker_menu() {
     'weight' => 3,
   );
 
-  $items['admin/reports/inbound-links/add'] = array(
-    'title' => 'Add site',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('inbound_checker_form_site_add'),
-    'access arguments' => array('administer inbound cheker'),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 2,
-  );
   return $items;
 }
 
@@ -145,7 +145,7 @@ function inbound_checker_form_site_add_submit($form, &$form_state) {
   $link = new stdClass();
   $link->site_name = $form_state['values']['website_name'];
   $link->site_address = $form_state['values']['website_address'];
-  $link->expire_date = mktime(date('H'), date('i'), date('s'), $form_state['values']['ad_date_expire']['month'], $form_state['values']['ad_date_expire']['day'], $form_state['values']['ad_date_expire']['year']);
+  $link->expiry = mktime(date('H'), date('i'), date('s'), $form_state['values']['ad_date_expire']['month'], $form_state['values']['ad_date_expire']['day'], $form_state['values']['ad_date_expire']['year']);
   _inbound_checker_site_save($link);
   drupal_set_message(t('Entry has been created.'));
 }
@@ -172,7 +172,7 @@ function _inbound_checker_site_save($link) {
 function _inbound_checker_sites_table() {
   $rows = array();
   $header = array(
-    t('id'),
+    '',
     t('Site name'),
     t('Site address'),
     t('Number of links'),
@@ -181,22 +181,23 @@ function _inbound_checker_sites_table() {
 
   $results = db_query("SELECT * FROM {inbound_checker}");
   $link_class = '';
+  $count = 1;
   while ($result = db_fetch_object($results)) {
     $class = ($result->link_num > 0) ? 'ok' : 'warning';
-    if ($result->expire_date < time()) {
+    if ($result->expiry < time()) {
       $class = 'error';
     }
     $rows[] = array(
       'data' => array(
-        (int) $result->id,
+        $count,
         check_plain($result->site_name),
         check_plain($result->site_address),
         check_plain($result->link_num),
-        check_plain(format_date($result->expire_date)),
+        check_plain(format_date($result->expiry)),
       ),
       'class' => $class,
-
     );
+    ++$count;
   }
 
   if (empty($rows)) {
