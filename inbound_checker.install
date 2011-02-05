@@ -51,6 +51,13 @@ function inbound_checker_schema() {
         'length' => 4,
       ),
 
+      'expire_date' => array(
+        'description' => 'Expire date for links',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+      ),
+
     ),
     'primary key' => array('id'),
   );
