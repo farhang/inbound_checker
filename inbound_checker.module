@@ -56,6 +56,7 @@ function inbound_checker_menu() {
  * Implementation of hook_cron().
  */
 function inbound_checker_cron() {
+  // TODO: Breakout the logic into a separate API function.
   inbound_checker_form_list_submit($form, &$form_state);
 }
 
@@ -71,10 +72,11 @@ function inbound_checker_settings() {
   $form['inbound_checker_keyword'] = array(
     '#type' => 'textfield',
     '#title' => t('keyword'),
-    '#description' => t('e.g.‌ www.example.com'),
+    '#description' => t('The keyword to seek in external sites. e.g.‌ <em>www.example.com</em>'),
     '#default_value' => variable_get('inbound_checker_keyword', ''),
     '#required' => TRUE,
   );
+
   return system_settings_form($form);
 }
 
@@ -86,6 +88,8 @@ function inbound_checker_settings() {
 function inbound_checker_form_site_add() {
   $form = array();
 
+  // TODO: Prepend the module namespace to field names.
+
   $form['website_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Website name'),
@@ -95,7 +99,7 @@ function inbound_checker_form_site_add() {
   $form['website_address'] = array(
     '#type' => 'textfield',
     '#title' => t('Website address'),
-    '#description' => t('example:‌ http://www.example.com'),
+    '#description' => t('The external site URL to seek the keyword in. e.g.:‌ http://www.example.com'),
     '#required' => TRUE,
   );
 
@@ -117,6 +121,9 @@ function inbound_checker_form_site_add() {
  * Validation callback for site add form.
  */
 function inbound_checker_form_site_add_validate($form, &$form_state) {
+  // TODO: Update field names once they've been changed in form definition callback.
+  // TODO: Check the logic.
+
   $site_address = $form_state['values']['website_address'];
   if ($form_state['values']['website_name']) {
     $pos = strpos($form_state['values']['website_name'], '<');
@@ -142,6 +149,8 @@ function inbound_checker_form_site_add_validate($form, &$form_state) {
  * Submission callback for site add form.
  */
 function inbound_checker_form_site_add_submit($form, &$form_state) {
+  // TODO: Update field names once they've been changed in form definition callback.
+
   $link = new stdClass();
   $link->site_name = $form_state['values']['website_name'];
   $link->site_address = $form_state['values']['website_address'];
@@ -164,12 +173,15 @@ function _inbound_checker_site_save($link) {
 }
 
 /**
- * Helper function to theme sites table.
+ * Helper function to theme a table for sites listing.
  *
  * @return
  *   Sites themed output.
  */
 function _inbound_checker_sites_table() {
+  // TODO: Check the logic.
+  // TODO: Consider implementing hook_theme(), if required.
+
   $rows = array();
   $header = array(
     '',
@@ -212,6 +224,9 @@ function _inbound_checker_sites_table() {
  * Form callback sites list page.
  */
 function inbound_checker_form_list() {
+  // TODO: Move to forms section.
+  // TODO: Prepend field names with module namespace.
+
   $form = array();
   $form['#prefix'] = _inbound_checker_sites_table();
   $form['only-new'] = array(
@@ -234,6 +249,8 @@ function inbound_checker_form_list() {
  * Submission callback for sites list form.
  */
 function inbound_checker_form_list_submit($form, &$form_state) {
+  // TODO: Check the logic.
+
   $results = db_query("SELECT * FROM {inbound_checker}");
   $batch = array(
     'title' => t('get links...'),
@@ -257,6 +274,9 @@ function inbound_checker_form_list_submit($form, &$form_state) {
  *   Site info object.
  */
 function _inbound_checker_get_links_with_batch($result) {
+  // TODO: Check the logic.
+  // TODO: Provide the option to fetch contents usng CURL.
+
   $sitecontent = file_get_contents($result->site_address);
 
   $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
