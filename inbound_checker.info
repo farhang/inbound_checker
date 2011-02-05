@@ -1,5 +1,4 @@
 ; $Id$
-name = "Inbound link checker"
-description = "this module created for check inboundlink to your site with"
+name = "Inbound Link Checker"
+description = "Checks website inbound links status."
 core = 6.x
-

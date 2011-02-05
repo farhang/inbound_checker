@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Contains un/installation hook implementations.
+ * Contains Inbound Checker un/installation hook implementations.
  */
 
 /**
@@ -13,7 +13,6 @@ function inbound_checker_install() {
   drupal_install_schema('inbound_checker');
 }
 
-
 /**
  * Implements hook_uninstall().
  */
@@ -22,9 +21,11 @@ function inbound_checker_uninstall() {
 }
 
 /**
- * Implements of hook_schema
+ * Implements hook_schema().
  */
 function inbound_checker_schema() {
+  $schema = array();
+
   $schema['inbound_checker'] = array(
     'fields' => array(
       'id' => array(
@@ -50,7 +51,6 @@ function inbound_checker_schema() {
         'not null' => TRUE,
         'length' => 4,
       ),
-
     ),
     'primary key' => array('id'),
   );

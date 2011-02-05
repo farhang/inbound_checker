@@ -10,9 +10,7 @@
  * Implements hook_perm().
  */
 function inbound_checker_perm() {
-  return array(
-    'administer inbound cheker',
-  );
+  return array('administer inbound cheker');
 }
 
 /**
@@ -23,7 +21,8 @@ function inbound_checker_menu() {
 
   $items['admin/reports/inbound-links'] =
   $items['admin/reports/inbound-links/sites'] = array(
-    'title' => 'Sites list',
+    'title' => 'Inbound Links',
+    'description' => 'A list of inbound links reports.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('inbound_checker_form_list'),
     'access arguments' => array('administer inbound cheker'),
@@ -32,6 +31,7 @@ function inbound_checker_menu() {
   );
 
   $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK;
+
   $items['admin/reports/inbound-links/settings'] = array(
     'title' => 'Settings',
     'page callback' => 'drupal_get_form',
@@ -53,25 +53,36 @@ function inbound_checker_menu() {
 }
 
 /**
- * Generates a inbound ad settings page
- **/
-function inbound_checker_settings() {
- $form = array();
+ * Implements of hook_cron().
+ */
+function inbound_checker_cron() {
+  inbound_checker_form_list_submit($form, &$form_state);
+}
 
- $form['inbound_checker_keyword'] = array(
+/**
+ * Form callback for module settings.
+ *
+ * @ingroup forms
+ * @see system_settings_form()
+ */
+function inbound_checker_settings() {
+  $form = array();
+
+  $form['inbound_checker_keyword'] = array(
     '#type' => 'textfield',
-    '#default_value' => variable_get('inbound_checker_keyword', ''),
     '#title' => t('keyword'),
     '#description' => t('e.g.‌ www.example.com'),
+    '#default_value' => variable_get('inbound_checker_keyword', ''),
     '#required' => TRUE,
   );
   return system_settings_form($form);
 }
 
-
 /**
- * Generates a form for get the address of the websites
- **/
+ * Form callback for site addition page.
+ *
+ * @ingroup forms
+ */
 function inbound_checker_form_site_add() {
   $form = array();
 
@@ -97,7 +108,7 @@ function inbound_checker_form_site_add() {
 }
 
 /**
- *
+ * Validation callback for site add form.
  */
 function inbound_checker_form_site_add_validate($form, &$form_state) {
   $site_address = $form_state['values']['website_address'];
@@ -122,7 +133,7 @@ function inbound_checker_form_site_add_validate($form, &$form_state) {
 }
 
 /**
- *
+ * Submission callback for site add form.
  */
 function inbound_checker_form_site_add_submit($form, &$form_state) {
   $link = new stdClass();
@@ -133,7 +144,12 @@ function inbound_checker_form_site_add_submit($form, &$form_state) {
 }
 
 /**
- * Insert an objext to the inbound_checker database
+ * Helper function to save a linker website info.
+ *
+ * @param $link
+ *   Site link object.
+ *
+ * @see drupal_write_record()
  */
 function _inbound_checker_site_save($link) {
   $site = (object) $site;
@@ -141,7 +157,10 @@ function _inbound_checker_site_save($link) {
 }
 
 /**
+ * Helper function to theme sites table.
  *
+ * @return
+ *   Sites themed output.
  */
 function _inbound_checker_sites_table() {
   $rows = array();
@@ -177,7 +196,7 @@ function _inbound_checker_sites_table() {
 }
 
 /**
- *
+ * Form callback sites list page.
  */
 function inbound_checker_form_list() {
   $form = array();
@@ -199,7 +218,7 @@ function inbound_checker_form_list() {
 }
 
 /**
- *
+ * Submission callback for sites list form.
  */
 function inbound_checker_form_list_submit($form, &$form_state){
   $results = db_query("SELECT * FROM {inbound_checker}");
@@ -218,6 +237,12 @@ function inbound_checker_form_list_submit($form, &$form_state){
 
 }
 
+/**
+ * Batch processing helper.
+ *
+ * @param $result
+ *   Site info object.
+ */
 function _inbound_checker_get_links_with_batch($result) {
   $sitecontent = file_get_contents($result->site_address);
   $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
@@ -227,11 +252,3 @@ function _inbound_checker_get_links_with_batch($result) {
     )
   );
 }
-
-/**
- * Implements of hook_cron
- */
-function inbound_checker_cron() {
-  inbound_checker_form_list_submit($form, &$form_state);
-}
-
