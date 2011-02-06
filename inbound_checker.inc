@@ -88,13 +88,7 @@ function inbound_checker_form_add_validate($form, &$form_state) {
   $result = db_fetch_object($results);
   if ($result) {
     form_set_error('inbound_checker_site_address', t('Your url already existes.'));
-  }  $batch = array(
-    'operations' => array(),
-    'title' => t('Bulk SMS Sending...'),
-    'init_message' => t('Dispatching bulk SMS send operation...'),
-    'error_message' => t('An error occured while sending bulk SMS messages.'),
-    'progress_message' => t('@current out of @total messages has been sent, @remaining remaining. (@percentage%)'),
-  );
+  }
 }
 
 /**
