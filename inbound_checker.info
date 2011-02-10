@@ -2,3 +2,5 @@
 name = "Inbound Link Checker"
 description = "Checks website inbound links status."
 core = 6.x
+dependencies[] = sitestats
+

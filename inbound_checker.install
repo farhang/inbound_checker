@@ -68,12 +68,26 @@ function inbound_checker_schema() {
         'length' => 10,
         'default' => 0,
       ),
-      'gpr' => array(
+      'google_pr' => array(
         'description' => 'Google page rank',
         'type' => 'int',
         'not null' => FALSE,
         'length' => 2,
         'default' => 0,
+      ),
+      'alexa_pr' => array(
+        'description' => 'Alexa page rank',
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'length' => 255,
+        'default' => '',
+      ),
+      'site_age' => array(
+        'description' => 'Domain age',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
       ),
     ),
     'primary key' => array('icid'),
