@@ -135,10 +135,10 @@ function _inbound_checker_sites_table() {
  *
  * @todo Rename!!
  */
-function __inbound_checker_getlinks_batch($result) {
+function _inbound_checker_getlinks_batch($result) {
   // TODO: Check the logic.
   // TODO: Provide the option to fetch contents usng CURL.
-
+  dpm($batch);
   $sitecontent = file_get_contents($result->site_address);
 
   $icid = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
