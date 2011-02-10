@@ -102,7 +102,7 @@ function _inbound_checker_sites_table() {
   $link_class = '';
   $count = 1;
   while ($result = db_fetch_object($results)) {
-    $class = ($result->link_num > 0) ? 'ok' : 'warning';
+    $class = ($result->icid > 0) ? 'ok' : 'warning';
     if ($result->expiry < time()) {
       $class = 'error';
     }
@@ -111,7 +111,7 @@ function _inbound_checker_sites_table() {
         $count,
         check_plain($result->site_name),
         check_plain($result->site_address),
-        check_plain($result->link_num),
+        check_plain($result->icid),
         check_plain(format_date($result->expiry)),
       ),
       'class' => $class,
@@ -135,15 +135,15 @@ function _inbound_checker_sites_table() {
  *
  * @todo Rename!!
  */
-function _inbound_checker_get_links_with_batch($result) {
+function __inbound_checker_getlinks_batch($result) {
   // TODO: Check the logic.
   // TODO: Provide the option to fetch contents usng CURL.
 
   $sitecontent = file_get_contents($result->site_address);
 
-  $link_num = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
-  db_query("UPDATE {inbound_checker} SET link_num = %d WHERE site_address = '%s'", array(
-    $link_num,
+  $icid = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
+  db_query("UPDATE {inbound_checker} SET icid = %d WHERE site_address = '%s'", array(
+    $icid,
     $result->site_address,
     )
   );

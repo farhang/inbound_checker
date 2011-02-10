@@ -135,6 +135,17 @@ function inbound_checker_form_list() {
 }
 
 /**
+ * Validation callback for sites list form.
+ */
+function inbound_checker_form_list_validate($form, &$form_state) {
+
+  // Check the keyword text field in settings tab for not empty.
+if (!variable_get('inbound_checker_keyword', '')) {
+    form_set_error('inbound_checker_check_zeros', t('Please fill the keyword textfield in settings tab.'));
+  }
+}
+
+/**
  * Submission callback for sites list form.
  */
 function inbound_checker_form_list_submit($form, &$form_state) {
@@ -152,13 +163,18 @@ function inbound_checker_form_list_submit($form, &$form_state) {
   $results = db_query("SELECT * FROM {inbound_checker}");
 
   while ($result = db_fetch_object($results)) {
-    // TODO: Check $form_state['values'] instead.
-    if (($result->link_num == 0 && $form_state['clicked_button']['#post']['inbound_checker_check_zeros']) || (!$form_state['clicked_button']['#post']['inbound_checker_check_zeros'])) {
-      $batch['operations'][] = array('_inbound_checker_get_links_with_batch', array($result)); //TODO: Rename batch helper.
+    // TODO: Check $form_state['values'] instead. **Was done**
+    if (($result->icid == 0 && $form_state['values']['inbound_checker_check_zeros']) || (!$form_state['values']['inbound_checker_check_zeros'])) {
+      $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result)); //TODO: Rename batch helper. **Was done**
     }
   }
 
-  batch_set($batch);
+  if($batch['operations'] == NULL) {
+    form_set_error ('inbound_checker_check_zeros' ,t('No links to check.'));
+  }
+  else {
+    batch_set($batch);
+  }
 }
 
 /**
