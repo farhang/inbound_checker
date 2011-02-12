@@ -144,10 +144,17 @@ function inbound_checker_form_list() {
  * Validation callback for sites list form.
  */
 function inbound_checker_form_list_validate($form, &$form_state) {
-
   // Check the keyword text field in settings tab for not empty.
-if (!variable_get('inbound_checker_keyword', '')) {
+  if (!variable_get('inbound_checker_keyword', '')) {
     form_set_error('inbound_checker_check_zeros', t('Please fill the keyword textfield in settings tab.'));
+  }
+  // Check available sites.
+  // TODO: Use module's API.
+  if ($form_state['values']['inbound_checker_check_zeros']) {
+    $results = db_result(db_query("SELECT COUNT(icid) FROM {inbound_checker} WHERE count = 0"));
+    if (!$results) {
+      form_set_error('inbound_checker_check_zeros', t('There were no links to check.'));
+    }
   }
 }
 
@@ -175,13 +182,7 @@ function inbound_checker_form_list_submit($form, &$form_state) {
     }
   }
 
-  if($batch['operations'] == NULL) {
-    form_set_error ('inbound_checker_check_zeros' ,t('No links to check.'));
-  }
-  else {
-    batch_set($batch);
-  }
-
+  batch_set($batch);
 }
 
 /**
