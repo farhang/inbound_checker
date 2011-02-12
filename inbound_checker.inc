@@ -39,6 +39,7 @@ function inbound_checker_form_settings() {
  */
 function inbound_checker_form($form_state, $ic = NULL) {
   $form = array();
+  // Site entry name.
   $form['inbound_checker_site_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Website name'),
@@ -46,7 +47,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#required' => TRUE,
     '#default_value' => isset($ic->site_name) ? $ic->site_name : '',
   );
-
+  // Site entry URL.
   $form['inbound_checker_site_address'] = array(
     '#type' => 'textfield',
     '#title' => t('Website address'),
@@ -54,7 +55,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#required' => TRUE,
     '#default_value' => isset($ic->site_address) ? $ic->site_address : '',
   );
-
+  // Site entry link expiry date.
   $form['inbound_checker_site_expiry'] = array(
     '#type' => 'date',
     '#title' => t('Expiry date'),
@@ -67,7 +68,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
       'day' => date('j', $ic->expiry),
     ) : '',
   );
-
+  // Site entry inbound link price.
   $form['inbound_checker_link_price'] = array(
     '#type' => 'textfield',
     '#title' => t('Link price'),
@@ -75,13 +76,13 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#required' => FALSE,
     '#default_value' => isset($ic->price) ? $ic->price : '',
   );
-
+  // Site entry identifier in case that it's a edit form.
   $form['inbound_checker_id'] = array(
     '#type' => 'hidden',
     '#required' => FALSE,
     '#default_value' => isset($ic->icid) ? $ic->icid : '',
   );
-
+  // Submit button.
   $form['op'] = array(
     '#type' => 'submit',
     '#value' => isset($ic) ? t('Edit') : t('Add'),
