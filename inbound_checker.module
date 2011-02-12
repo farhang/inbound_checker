@@ -181,10 +181,18 @@ function inbound_checker_form($form_state, $ic = NULL) {
 }
 
 /**
- * Implements hook inbound_link_load() for fetch and return the inbound checker object for inbound_checker_edit() ballback.
+ * Inbound link load helper.
+ *
+ * @param $icid
+ *   Inbound checker record identidier to load.
+ *
+ * @return
+ *   Loaded object or FALSE on fail.
+ *
+ * @todo Will be a API function later.
  */
-function inbound_checker_load ($id) {
-  $results = db_query ("SELECT * from {inbound_checker} where icid = %d" , $id);
+function inbound_checker_load($icid) {
+  $results = db_query ("SELECT * from {inbound_checker} where icid = %d" , $icid);
   return db_fetch_object($results);
 }
 
