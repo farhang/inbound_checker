@@ -73,13 +73,11 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#type' => 'textfield',
     '#title' => t('Link price'),
     '#description' => t('The link price'),
-    '#required' => FALSE,
     '#default_value' => isset($ic->price) ? $ic->price : '',
   );
   // Site entry identifier in case that it's a edit form.
   $form['inbound_checker_id'] = array(
     '#type' => 'hidden',
-    '#required' => FALSE,
     '#default_value' => isset($ic->icid) ? $ic->icid : '',
   );
   // Submit button.
