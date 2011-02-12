@@ -140,7 +140,7 @@ function _inbound_checker_sites_table() {
         check_plain($result->alexa_pr),
         check_plain($result->site_age),
         check_plain($result->price),
-        check_plain(format_date($result->expiry)),
+        check_plain(format_date($result->expiry, 'custom', 'D, m/d/Y')),
       ),
       'class' => $class,
     );
