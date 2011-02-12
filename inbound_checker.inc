@@ -60,7 +60,6 @@ function inbound_checker_form_add() {
     '#type' => 'textfield',
     '#title' => t('Link price'),
     '#description' => t('The link price'),
-    '#required' => TRUE,
   );
 
   $form['op'] = array(
