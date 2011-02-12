@@ -36,6 +36,8 @@ function inbound_checker_form_settings() {
  *
  * @return
  *   Defined form array.
+ *
+ * @ingroup forms
  */
 function inbound_checker_form($form_state, $ic = NULL) {
   $form = array();
@@ -141,7 +143,9 @@ function inbound_checker_form_submit($form, &$form_state) {
 }
 
 /**
- * Form callback sites list page.
+ * Form callback for site entries listing.
+ *
+ * @ingroup forms
  */
 function inbound_checker_form_list() {
   $form = array();
