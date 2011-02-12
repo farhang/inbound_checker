@@ -91,7 +91,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
 }
 
 /**
- * Validation callback for site add form.
+ * Validation callback for site add/edit form.
  */
 function inbound_checker_form_validate($form, &$form_state) {
   // TODO: Check the logic. Assigned to @sepehr.
@@ -119,7 +119,7 @@ function inbound_checker_form_validate($form, &$form_state) {
 }
 
 /**
- * Submission callback for site add form.
+ * Submission callback for site add/edit form.
  *
  * @see _inbound_checker_site_save()
  */
@@ -233,6 +233,30 @@ function _inbound_checker_date_after_build($form_element, &$form_state) {
 }
 
 /**
+ * Helper function aasdasd a timestamp from date and time form elements.
+ *
+ * @param $date_element
+ *   An array of form date element:
+ *   - year
+ *   - month
+ *   - day
+ *
+ * @param $time_element
+ *   24-format hour integer.
+ *
+ * @return
+ *   Corresponding timestamp.
+ */
+function _inbound_checker_mktime($date_element, $time_element = 0) {
+  return mktime(
+    (int) $time_element, 0, 0,
+    (int) $date_element['month'],
+    (int) $date_element['day'],
+    (int) $date_element['year']
+  );
+}
+
+/**
  * Helper function to theme a table for sites listing.
  *
  * @return
@@ -303,29 +327,5 @@ function _inbound_checker_sites_table() {
   return empty($rows) ?
     t('Nothing to show, Add your website in "Add site" tab.') :
     theme('table', $header, $rows) . theme('pager', array(), 25, 1);
-}
-
-/**
- * Helper function aasdasd a timestamp from date and time form elements.
- *
- * @param $date_element
- *   An array of form date element:
- *   - year
- *   - month
- *   - day
- *
- * @param $time_element
- *   24-format hour integer.
- *
- * @return
- *   Corresponding timestamp.
- */
-function _inbound_checker_mktime($date_element, $time_element = 0) {
-  return mktime(
-    (int) $time_element, 0, 0,
-    (int) $date_element['month'],
-    (int) $date_element['day'],
-    (int) $date_element['year']
-  );
 }
 
