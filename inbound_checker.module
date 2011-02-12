@@ -92,7 +92,7 @@ function _inbound_checker_getlinks_batch($result) {
   // TODO: Provide the option to fetch contents usng CURL.
   static $loaded = FALSE;
   if (!$loaded) {
-    module_load_include('inc','sitestats');
+    module_load_include('inc', 'sitestats');
     $loaded = TRUE;
   }
 
