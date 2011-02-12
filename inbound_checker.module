@@ -32,16 +32,30 @@ function inbound_checker_menu() {
     'type' => MENU_NORMAL_ITEM,
     'weight' => 1,
   );
-  $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK;
+
+  $items['admin/reports/inbound-links/sites'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
 
   $items['admin/reports/inbound-links/add'] = array(
     'title' => 'Add site',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('inbound_checker_form_add'),
+    'page arguments' => array('inbound_checker_form'),
     'access arguments' => array('administer inbound cheker'),
     'file' => 'inbound_checker.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
+  );
+
+  $items['admin/reports/inbound-links/%inbound_checker/edit'] = array(
+    'title' => 'Edit site',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('inbound_checker_form', 3),
+    'access arguments' => array('administer inbound cheker'),
+    'file' => 'inbound_checker.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3,
   );
 
   $items['admin/reports/inbound-links/settings'] = array(
@@ -52,7 +66,7 @@ function inbound_checker_menu() {
     'access arguments' => array('administer inbound cheker'),
     'file' => 'inbound_checker.inc',
     'type' => MENU_LOCAL_TASK,
-    'weight' => 3,
+    'weight' => 4,
   );
 
   return $items;
@@ -75,8 +89,8 @@ function inbound_checker_cron() {
  * @see drupal_write_record()
  */
 function _inbound_checker_site_save($link) {
-  $site = (object) $site;
-  drupal_write_record('inbound_checker', $link);
+  isset($link->icid) ? drupal_write_record('inbound_checker', $link, 'icid') : drupal_write_record('inbound_checker', $link);
+  //drupal_goto("admin");
 }
 
 /**
@@ -100,7 +114,6 @@ function _inbound_checker_getlinks_batch($result) {
   // Get all page ranks.
   $all_pr = sitestats_getstats($result->site_address);
   $count = substr_count($sitecontent, variable_get('inbound_checker_keyword', ''));
-//  dpm($all_pr);
   db_query("UPDATE {inbound_checker} SET count = %d, alexa_pr = '%s', google_pr = %d, site_age = '%s' WHERE site_address = '%s'", array(
     $count,
     $all_pr['alexa_rank'],
@@ -109,5 +122,71 @@ function _inbound_checker_getlinks_batch($result) {
     $result->site_address,
     )
   );
+}
+
+/**
+ * Implements hook inbound_link_load() for fetch and
+ * return the inbound checker object for inbound_checker_edit() ballback.
+ */
+function inbound_checker_form($form_state, $ic = NULL) {
+  $form = array();
+  $form['inbound_checker_site_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website name'),
+    '#description' => t('Name of the external website you wish to check.'),
+    '#required' => TRUE,
+    '#default_value' => isset($ic->site_name) ? $ic->site_name : '',
+  );
+
+  $form['inbound_checker_site_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website address'),
+    '#description' => t('The external site URL to seek the keyword in. e.g.:‌ http://www.example.com'),
+    '#required' => TRUE,
+    '#default_value' => isset($ic->site_address) ? $ic->site_address : '',
+  );
+
+  $form['inbound_checker_site_expiry'] = array(
+    '#type' => 'date',
+    '#title' => t('Expiry date'),
+    '#description' => t('Specify the date in which your subscription (if any) will be expired.'),
+    // Alter the year range.
+    '#after_build' => array('_inbound_checker_date_after_build'),
+    '#default_value' => isset($ic->expiry) ? array(
+      'year' => date('Y', $ic->expiry),
+      'month' => date('m', $ic->expiry),
+      'day' => date('j', $ic->expiry),
+    ) : '',
+  );
+
+  $form['inbound_checker_link_price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link price'),
+    '#description' => t('The link price'),
+    '#required' => FALSE,
+    '#default_value' => isset($ic->price) ? $ic->price : '',
+  );
+
+  $form['inbound_checker_id'] = array(
+    '#type' => 'hidden',
+    '#required' => FALSE,
+    '#default_value' => isset($ic->icid) ? $ic->icid : '',
+  );
+
+  $form['op'] = array(
+    '#type' => 'submit',
+    '#value' => isset($ic) ? t('Edit') : t('Add'),
+    '#name' => isset($ic) ? 'edit' : 'add',
+  );
+
+  return $form;
+}
+
+/**
+ * Implements hook inbound_link_load() for fetch and return the inbound checker object for inbound_checker_edit() ballback.
+ */
+function inbound_checker_load ($id) {
+  $results = db_query ("SELECT * from {inbound_checker} where icid = %d" , $id);
+  return db_fetch_object($results);
 }
 

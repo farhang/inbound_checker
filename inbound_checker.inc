@@ -27,55 +27,10 @@ function inbound_checker_form_settings() {
 }
 
 /**
- * Form callback for site addition page.
- *
- * @ingroup forms
- */
-function inbound_checker_form_add() {
-  $form = array();
-
-  $form['inbound_checker_site_name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Website name'),
-    '#description' => t('Name of the external website you wish to check.'),
-    '#required' => TRUE,
-  );
-
-  $form['inbound_checker_site_address'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Website address'),
-    '#description' => t('The external site URL to seek the keyword in. e.g.:‌ http://www.example.com'),
-    '#required' => TRUE,
-  );
-
-  $form['inbound_checker_site_expiry'] = array(
-    '#type' => 'date',
-    '#title' => t('Expiry date'),
-    '#description' => t('Specify the date in which your subscription (if any) will be expired.'),
-    // Alter the year range.
-    '#after_build' => array('_inbound_checker_date_after_build'),
-  );
-
-  $form['inbound_checker_link_price'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Link price'),
-    '#description' => t('The link price'),
-  );
-
-  $form['op'] = array(
-    '#type' => 'submit',
-    '#value' => t('Add'),
-  );
-
-  return $form;
-}
-
-/**
  * Validation callback for site add form.
  */
-function inbound_checker_form_add_validate($form, &$form_state) {
+function inbound_checker_form_validate($form, &$form_state) {
   // TODO: Check the logic. Assigned to @sepehr.
-
   if ($form_state['values']['inbound_checker_site_name']) {
     $pos = strpos($form_state['values']['inbound_checker_site_name'], '<');
     if (!empty($pos)) {
@@ -90,10 +45,12 @@ function inbound_checker_form_add_validate($form, &$form_state) {
   }
 
   // TODO: Define the module API functions and do such operations through that layer.
-  $results = db_query("SELECT * FROM {inbound_checker} WHERE site_address = '%s'", $form_state['values']['inbound_checker_site_address']);
-  $result = db_fetch_object($results);
-  if ($result) {
-    form_set_error('inbound_checker_site_address', t('Your url already existes.'));
+  if($form_state['values']['op'] == t('Add')) {
+    $results = db_query("SELECT * FROM {inbound_checker} WHERE site_address = '%s'", $form_state['values']['inbound_checker_site_address']);
+    $result = db_fetch_object($results);
+    if ($result) {
+      form_set_error('inbound_checker_site_address', t('Your url already existes.'));
+    }
   }
 }
 
@@ -102,17 +59,21 @@ function inbound_checker_form_add_validate($form, &$form_state) {
  *
  * @see _inbound_checker_site_save()
  */
-function inbound_checker_form_add_submit($form, &$form_state) {
+function inbound_checker_form_submit($form, &$form_state) {
   $link = new stdClass();
   $link->site_name = $form_state['values']['inbound_checker_site_name'];
   $link->site_address = $form_state['values']['inbound_checker_site_address'];
   $link->expiry = _inbound_checker_mktime($form_state['values']['inbound_checker_site_expiry']);
   $link->price = $form_state['values']['inbound_checker_link_price'];
+  if($form_state['values']['inbound_checker_id'] != '') {
+    $link->icid = $form_state['values']['inbound_checker_id'];
+  }
   // Saves the inbound link.
   _inbound_checker_site_save($link);
-
   // Notify.
+  dpm ($form_state);
   drupal_set_message(t('Website entry has been successfully created.'));
+  drupal_goto("admin/reports/inbound-links");
 }
 
 /**
@@ -245,6 +206,7 @@ function _inbound_checker_sites_table() {
       'data' => t('Expire date'),
       'field' => 'expiry',
     ),
+    t('Actions'),
   );
 
   $results = db_query("SELECT * FROM {inbound_checker}");
@@ -267,6 +229,7 @@ function _inbound_checker_sites_table() {
         check_plain($result->site_age),
         check_plain($result->price),
         check_plain(format_date($result->expiry, 'custom', 'D, m/d/Y')),
+        $link = '<a href="inbound-links/' . $result->icid . '/edit"' . '>edit</a>',
       ),
       'class' => $class,
     );
