@@ -44,16 +44,16 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#type' => 'textfield',
     '#title' => t('Website name'),
     '#description' => t('Name of the external website you wish to check.'),
-    '#required' => TRUE,
     '#default_value' => isset($ic->site_name) ? $ic->site_name : '',
+    '#required' => TRUE,
   );
   // Site entry URL.
   $form['inbound_checker_site_address'] = array(
     '#type' => 'textfield',
     '#title' => t('Website address'),
     '#description' => t('The external site URL to seek the keyword in. e.g.:‌ http://www.example.com'),
-    '#required' => TRUE,
     '#default_value' => isset($ic->site_address) ? $ic->site_address : '',
+    '#required' => TRUE,
   );
   // Site entry link expiry date.
   $form['inbound_checker_site_expiry'] = array(
@@ -62,17 +62,17 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#description' => t('Specify the date in which your subscription (if any) will be expired.'),
     // Alter the year range.
     '#after_build' => array('_inbound_checker_date_after_build'),
-    '#default_value' => isset($ic->expiry) ? array(
-      'year' => date('Y', $ic->expiry),
+    '#default_value' => !isset($ic->expiry) ? '' : array(
+      'day'   => date('j', $ic->expiry),
+      'year'  => date('Y', $ic->expiry),
       'month' => date('m', $ic->expiry),
-      'day' => date('j', $ic->expiry),
-    ) : '',
+    ),
   );
   // Site entry inbound link price.
   $form['inbound_checker_link_price'] = array(
     '#type' => 'textfield',
     '#title' => t('Link price'),
-    '#description' => t('The link price'),
+    '#description' => t('Optional inbound link price you have payed to get.'),
     '#default_value' => isset($ic->price) ? $ic->price : '',
   );
   // Site entry identifier in case that it's a edit form.
@@ -83,8 +83,8 @@ function inbound_checker_form($form_state, $ic = NULL) {
   // Submit button.
   $form['op'] = array(
     '#type' => 'submit',
-    '#value' => isset($ic) ? t('Edit') : t('Add'),
     '#name' => isset($ic) ? 'edit' : 'add',
+    '#value' => isset($ic) ? t('Edit') : t('Add'),
   );
 
   return $form;
