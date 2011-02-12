@@ -127,10 +127,8 @@ function inbound_checker_form_validate($form, &$form_state) {
  * @see _inbound_checker_site_save()
  */
 function inbound_checker_form_submit($form, &$form_state) {
-  // FIX: @farhang: Aftering editing an entry, I got redirected to "E" path, getting this error:
-  // user warning: You have an error in your SQL syntax; check the manual that corresponds to your
-  // MySQL server version for the right syntax to use near 'type for db_type_placeholder' at line 1 query:
-  // UPDATE inbound_checker SET site_address = 'http://www.storypixel.com/post/perfectionism_the_enemy', site_name = 'Story Pixel', expiry = 1452630600, price = 0 WHERE 1 = unsupported type for db_type_placeholder in /var/www/dev/cart/includes/common.inc on line 3550.
+  // FIX: @farhang: Aftering editing an entry, I got redirected to "E" path.
+
   $link = new stdClass();
   $link->site_name = $form_state['values']['inbound_checker_site_name'];
   $link->site_address = $form_state['values']['inbound_checker_site_address'];
@@ -139,8 +137,10 @@ function inbound_checker_form_submit($form, &$form_state) {
   if($form_state['values']['inbound_checker_id'] != '') {
     $link->icid = $form_state['values']['inbound_checker_id'];
   }
+
   // Saves the inbound link.
   _inbound_checker_site_save($link);
+
   // Notify.
   drupal_set_message(t('Website entry has been successfully created.'));
   drupal_goto("admin/reports/inbound-links");

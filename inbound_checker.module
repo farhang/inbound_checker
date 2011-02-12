@@ -85,10 +85,8 @@ function inbound_checker_cron() {
  * @see drupal_write_record()
  */
 function _inbound_checker_site_save($link) {
-  if (!isset($link->icid)) {
-    $link->icid = array();
-  }
-  drupal_write_record('inbound_checker', $link, $link->icid);
+  $update = isset($link->icid) ? 'icid' : array();
+  drupal_write_record('inbound_checker', $link, $update);
 }
 
 /**
