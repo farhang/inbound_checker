@@ -124,19 +124,22 @@ function inbound_checker_form_list() {
   // Inject themed table of available sites.
   $form['#prefix'] = _inbound_checker_sites_table();
 
-  $form['inbound_checker_check_zeros'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Refresh zero links.'),
-    '#description' => 'Check only 0 link numbers.',
-    '#default_value' => 1,
-    '#return_value' => 1,
-  );
+  // TODO: Use API layer instead.
+  $count = db_result(db_query("SELECT COUNT(icid) FROM {inbound_checker}"));
+  if ($count) {
+    $form['inbound_checker_check_zeros'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Refresh zero links.'),
+      '#description' => 'Check only 0 link numbers.',
+      '#default_value' => 1,
+      '#return_value' => 1,
+    );
 
-  $form['ops'] = array(
-    '#type' => 'submit',
-    '#value' => t('Calculate Again'),
-  );
-
+    $form['ops'] = array(
+      '#type' => 'submit',
+      '#value' => t('Calculate Again'),
+    );
+  }
 
   return $form;
 }
