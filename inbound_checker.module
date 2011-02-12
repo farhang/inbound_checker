@@ -20,7 +20,7 @@ function inbound_checker_perm() {
  */
 function inbound_checker_menu() {
   $items = array();
-
+  // Inbound links listing page.
   $items['admin/reports/inbound-links'] =
   $items['admin/reports/inbound-links/sites'] = array(
     'title' => 'Inbound Links',
@@ -32,12 +32,8 @@ function inbound_checker_menu() {
     'type' => MENU_NORMAL_ITEM,
     'weight' => 1,
   );
-
-  $items['admin/reports/inbound-links/sites'] = array(
-    'title' => 'List',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-  );
-
+  $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK,
+  // Inbound links addition form.
   $items['admin/reports/inbound-links/add'] = array(
     'title' => 'Add site',
     'page callback' => 'drupal_get_form',
@@ -47,9 +43,9 @@ function inbound_checker_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
   );
-
+  // Site entry edit.
   $items['admin/reports/inbound-links/%inbound_checker/edit'] = array(
-    'title' => 'Edit site',
+    'title' => 'Edit site entry',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('inbound_checker_form', 3),
     'access arguments' => array('administer inbound cheker'),
@@ -57,7 +53,7 @@ function inbound_checker_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 3,
   );
-
+  // Settings form.
   $items['admin/reports/inbound-links/settings'] = array(
     'title' => 'Settings',
     'description' => 'Inbound link checker configuration settings.',
