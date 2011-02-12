@@ -143,7 +143,9 @@ function inbound_checker_form_submit($form, &$form_state) {
 
   // Notify.
   drupal_set_message(t('Website entry has been successfully created.'));
-  drupal_goto("admin/reports/inbound-links");
+
+  // FIX: @farhang: That's not the way to redirect user in this case.
+  drupal_goto('admin/reports/inbound-links');
 }
 
 /**
