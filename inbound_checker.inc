@@ -75,7 +75,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#type' => 'textfield',
     '#title' => t('Link price'),
     '#description' => t('Optional inbound link price you have payed to get.'),
-    '#default_value' => isset($ic->price) ? $ic->price : '',
+    '#default_value' => isset($ic->price) ? $ic->price : '0',
   );
   // Site entry identifier in case that it's a edit form.
   $form['inbound_checker_id'] = array(
