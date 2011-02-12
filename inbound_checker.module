@@ -85,8 +85,14 @@ function inbound_checker_cron() {
  * @see drupal_write_record()
  */
 function _inbound_checker_site_save($link) {
-  isset($link->icid) ? drupal_write_record('inbound_checker', $link, 'icid') : drupal_write_record('inbound_checker', $link);
-  //drupal_goto("admin");
+  // Update an available site entry.
+  if (isset($link->icid)) {
+    drupal_write_record('inbound_checker', $link, 'icid');
+  }
+  // New site entry nsertion.
+  else {
+    drupal_write_record('inbound_checker', $link);
+  }
 }
 
 /**
