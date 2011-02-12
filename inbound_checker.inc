@@ -216,36 +216,35 @@ function _inbound_checker_date_after_build($form_element, &$form_state) {
 function _inbound_checker_sites_table() {
   // TODO: Check the logic.
   // TODO: Consider implementing hook_theme(), if required.
-
   $rows = array();
-    $header = array(
+  $header = array(
     '',
-      array(
+    array(
       'data' => t('Site name'),
       'field' => 'site_name',
-      ),
+    ),
     t('Site address'),
-      array(
+    array(
       'data' => t('Number of links'),
       'field' => 'count',
-      ),
-      array(
+    ),
+    array(
       'data' => t('Google PR'),
       'field' => 'google_pr',
-      ),
-      array(
+    ),
+    array(
       'data' => t('Alexa PR'),
       'field' => 'alexa_pr',
-      ),
+    ),
     t('Domain age'),
-      array(
+    array(
       'data' => t('Link Price'),
       'field' => 'price',
-      ),
-      array(
+    ),
+    array(
       'data' => t('Expire date'),
       'field' => 'expiry',
-      ),
+    ),
   );
 
   $results = db_query("SELECT * FROM {inbound_checker}");
@@ -259,7 +258,6 @@ function _inbound_checker_sites_table() {
     }
     $rows[] = array(
       'data' => array(
-
         $count,
         check_plain($result->site_name),
         check_plain($result->site_address),
@@ -275,10 +273,9 @@ function _inbound_checker_sites_table() {
     ++$count;
   }
 
-  if (empty($rows)) {
-    return t('Nothing to show, Add your website in "Add site" tab.');
-  }
-  return theme('table', $header, $rows) . theme('pager', array(), 25, 1);
+  return empty($rows) ?
+    t('Nothing to show, Add your website in "Add site" tab.') :
+    theme('table', $header, $rows) . theme('pager', array(), 25, 1);
 }
 
 /**

@@ -89,7 +89,7 @@ function _inbound_checker_site_save($link) {
  */
 function _inbound_checker_getlinks_batch($result) {
   // TODO: Check the logic.
-  // TODO: Provide the option to fetch contents usng CURL.
+  // TODO: Provide the option to fetch contents using CURL.
   static $loaded = FALSE;
   if (!$loaded) {
     module_load_include('inc', 'sitestats');
