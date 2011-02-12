@@ -150,12 +150,7 @@ function _inbound_checker_sites_table() {
   if (empty($rows)) {
     return t('Nothing to show, Add your website in "Add site" tab.');
   }
-  else {
-   // $sql .= tablesort_sql($header);
-    //$result = pager_query($sql, 10, 0, $sql_cnt);
-_inbound_checker_google_backlink();
-    return theme('table', $header, $rows) . theme('pager', array(), 25, 1);
-  }
+  return theme('table', $header, $rows) . theme('pager', array(), 25, 1);
 }
 
 /**

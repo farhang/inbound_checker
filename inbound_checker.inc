@@ -228,37 +228,3 @@ function _inbound_checker_mktime($date_element, $time_element = 0) {
   );
 }
 
-function _inbound_checker_google_backlink() {
-  $domain = "www.minyatoor.com"; // Enter your domain here.
-  $flag = TRUE;
-  $start = 0;
-  $backlink_num = 0;
-    $url = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&start=" . 1 . "&rsz=filtered_cse&key=016042340432458590842:kqvg-ukvhj8&"
-        . "q=link:".$domain;
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_REFERER, $domain);
-    $body = curl_exec($ch);
-    curl_close($ch);
-
-    $json = json_decode($body);
-    $urls = array();
-    foreach($json->responseData->results as $result) {// Loop through the objects in the result
-      $urls[] = $result->unescapedUrl;             // and add the URL to the array.
-    }
-    $url_count_per_page = sizeof($urls);
-    $backlink_num +=  $url_count_per_page;
- /*   if($url_count_per_page == 0) {
-      $flag = FALSE;
-    //  break;
-    }
-    else {
-      $start += 1;
-    }
-*/
-  dpm($urls);
-  dpm ($backlink_num);
-}
-
