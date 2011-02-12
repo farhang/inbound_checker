@@ -176,9 +176,8 @@ function inbound_checker_form_list_submit($form, &$form_state) {
   $results = db_query("SELECT * FROM {inbound_checker}");
 
   while ($result = db_fetch_object($results)) {
-    // TODO: Check $form_state['values'] instead. **Was done**
     if (($result->icid == 0 && $form_state['values']['inbound_checker_check_zeros']) || (!$form_state['values']['inbound_checker_check_zeros'])) {
-      $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result)); //TODO: Rename batch helper. **Was done**
+      $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result));
     }
   }
 
