@@ -32,7 +32,7 @@ function inbound_checker_menu() {
     'type' => MENU_NORMAL_ITEM,
     'weight' => 1,
   );
-  $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK,
+  $items['admin/reports/inbound-links/sites']['type'] = MENU_DEFAULT_LOCAL_TASK;
   // Inbound links addition form.
   $items['admin/reports/inbound-links/add'] = array(
     'title' => 'Add site',
