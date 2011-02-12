@@ -4,9 +4,9 @@
 /**
  * @file
  * Contains necessary hook implementations, callbacks & helpers.
- *
- * @todo Implement hook_help().
  */
+
+// TODO: @farhang: Implement hook_help().
 
 /**
  * Implements hook_perm().
@@ -72,7 +72,7 @@ function inbound_checker_menu() {
  * Implementation of hook_cron().
  */
 function inbound_checker_cron() {
-  // TODO: Breakout the logic into a separate API function.
+  // TODO: @sepehr: Breakout the logic into a separate API function.
   inbound_checker_form_list_submit($form, &$form_state);
 }
 
@@ -100,8 +100,8 @@ function _inbound_checker_site_save($link) {
  * @todo Rename!!
  */
 function _inbound_checker_getlinks_batch($result) {
-  // TODO: Check the logic.
-  // TODO: Provide the option to fetch contents using CURL.
+  // TODO: @sepehr: Check the logic.
+  // TODO: @farhang: Provide the option to fetch contents using CURL.
   static $loaded = FALSE;
   if (!$loaded) {
     module_load_include('inc', 'sitestats');
@@ -130,10 +130,9 @@ function _inbound_checker_getlinks_batch($result) {
  *
  * @return
  *   Loaded object or FALSE on fail.
- *
- * @todo Will be a API function later.
  */
 function inbound_checker_load($icid) {
+  // TODO: @sepehr: Wrap as module API.
   $results = db_query ("SELECT * from {inbound_checker} where icid = %d" , $icid);
   return db_fetch_object($results);
 }

@@ -58,6 +58,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
     '#required' => TRUE,
   );
   // Site entry link expiry date.
+  // TODO: @farhang: Consider links that get not expired, ever!
   $form['inbound_checker_site_expiry'] = array(
     '#type' => 'date',
     '#title' => t('Expiry date'),
@@ -96,7 +97,7 @@ function inbound_checker_form($form_state, $ic = NULL) {
  * Validation callback for site add/edit form.
  */
 function inbound_checker_form_validate($form, &$form_state) {
-  // TODO: Check the logic. Assigned to @sepehr.
+  // TODO: @sepehr: Check the logic.
   if ($form_state['values']['inbound_checker_site_name']) {
     $pos = strpos($form_state['values']['inbound_checker_site_name'], '<');
     if (!empty($pos)) {
@@ -110,7 +111,7 @@ function inbound_checker_form_validate($form, &$form_state) {
     }
   }
 
-  // TODO: Define the module API functions and do such operations through that layer.
+  // TODO: @sepehr: Define the module API functions and do such operations through that layer.
   if($form_state['values']['op'] == t('Add')) {
     $results = db_query("SELECT * FROM {inbound_checker} WHERE site_address = '%s'", $form_state['values']['inbound_checker_site_address']);
     $result = db_fetch_object($results);
@@ -152,7 +153,7 @@ function inbound_checker_form_list() {
   // Inject themed table of available sites.
   $form['#prefix'] = _inbound_checker_sites_table();
 
-  // TODO: Use API layer instead.
+  // TODO: @sepehr: Use API layer instead.
   $count = db_result(db_query("SELECT COUNT(icid) FROM {inbound_checker}"));
   if ($count) {
     $form['inbound_checker_check_zeros'] = array(
@@ -181,7 +182,7 @@ function inbound_checker_form_list_validate($form, &$form_state) {
     form_set_error('inbound_checker_check_zeros', t('Please fill the keyword textfield in settings tab.'));
   }
   // Check available sites.
-  // TODO: Use module's API.
+  // TODO: @sepehr: Use module's API when ready.
   if ($form_state['values']['inbound_checker_check_zeros']) {
     $results = db_result(db_query("SELECT COUNT(icid) FROM {inbound_checker} WHERE count = 0"));
     if (!$results) {
@@ -194,8 +195,9 @@ function inbound_checker_form_list_validate($form, &$form_state) {
  * Submission callback for sites list form.
  */
 function inbound_checker_form_list_submit($form, &$form_state) {
-  // TODO: Check the logic. Assigned to @sepehr.
-
+  // TODO: @sepehr: Check the logic.
+  // FIX: @farhang: When zero links checkbox is checked, nothing will happen through the batch process.
+  // FIX: @farhang: Google/Alexa pageranks calculation failure.
   $batch = array(
     'operations' => array(),
     'title' => t('Inbound Links Checking...'),
@@ -204,7 +206,7 @@ function inbound_checker_form_list_submit($form, &$form_state) {
     'progress_message' => t('@current out of @total links has been checked, @remaining remaining. (@percentage%)'),
   );
 
-  // TODO: Use module's API.
+  // TODO: @sepehr: Use module's API.
   $results = db_query("SELECT * FROM {inbound_checker}");
 
   while ($result = db_fetch_object($results)) {
@@ -230,6 +232,7 @@ function inbound_checker_form_list_submit($form, &$form_state) {
  * @see expand_date()
  */
 function _inbound_checker_date_after_build($form_element, &$form_state) {
+  // TODO: @farhang: Read.
   $now = format_date(time(), 'custom', 'Y');
   $form_element['year']['#options'] = drupal_map_assoc(range($now, $now + 5));
   return $form_element;
@@ -266,8 +269,8 @@ function _inbound_checker_mktime($date_element, $time_element = 0) {
  *   Sites themed output.
  */
 function _inbound_checker_sites_table() {
-  // TODO: Check the logic.
-  // TODO: Consider implementing hook_theme(), if required.
+  // TODO: @sepehr: Check the logic.
+  // TODO: @sepehr: Consider implementing hook_theme(), if required.
   $rows = array();
   $header = array(
     '',
