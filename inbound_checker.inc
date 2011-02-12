@@ -137,6 +137,7 @@ function inbound_checker_form_list() {
     '#value' => t('Calculate Again'),
   );
 
+
   return $form;
 }
 
@@ -201,6 +202,80 @@ function _inbound_checker_date_after_build($form_element, &$form_state) {
   $now = format_date(time(), 'custom', 'Y');
   $form_element['year']['#options'] = drupal_map_assoc(range($now, $now + 5));
   return $form_element;
+}
+
+/**
+ * Helper function to theme a table for sites listing.
+ *
+ * @return
+ *   Sites themed output.
+ */
+function _inbound_checker_sites_table() {
+  // TODO: Check the logic.
+  // TODO: Consider implementing hook_theme(), if required.
+
+  $rows = array();
+    $header = array(
+    '',
+      array(
+      'data' => t('Site name'),
+      'field' => 'site_name',
+      ),
+    t('Site address'),
+      array(
+      'data' => t('Number of links'),
+      'field' => 'count',
+      ),
+      array(
+      'data' => t('Google PR'),
+      'field' => 'google_pr',
+      ),
+      array(
+      'data' => t('Alexa PR'),
+      'field' => 'alexa_pr',
+      ),
+    t('Domain age'),
+      array(
+      'data' => t('Link Price'),
+      'field' => 'price',
+      ),
+      array(
+      'data' => t('Expire date'),
+      'field' => 'expiry',
+      ),
+  );
+
+  $results = db_query("SELECT * FROM {inbound_checker}");
+  $link_class = '';
+  $count = 1;
+  $results = pager_query("SELECT * FROM {inbound_checker}" . tablesort_sql($header), 25, 1);
+  while ($result = db_fetch_object($results)) {
+    $class = ($result->icid > 0) ? 'ok' : 'warning';
+    if ($result->expiry < time()) {
+      $class = 'error';
+    }
+    $rows[] = array(
+      'data' => array(
+
+        $count,
+        check_plain($result->site_name),
+        check_plain($result->site_address),
+        check_plain($result->count),
+        check_plain($result->google_pr),
+        check_plain($result->alexa_pr),
+        check_plain($result->site_age),
+        check_plain($result->price),
+        check_plain(format_date($result->expiry, 'custom', 'D, m/d/Y')),
+      ),
+      'class' => $class,
+    );
+    ++$count;
+  }
+
+  if (empty($rows)) {
+    return t('Nothing to show, Add your website in "Add site" tab.');
+  }
+  return theme('table', $header, $rows) . theme('pager', array(), 25, 1);
 }
 
 /**
