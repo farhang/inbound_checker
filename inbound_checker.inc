@@ -137,7 +137,6 @@ function inbound_checker_form_submit($form, &$form_state) {
   // Saves the inbound link.
   _inbound_checker_site_save($link);
   // Notify.
-  dpm ($form_state);
   drupal_set_message(t('Website entry has been successfully created.'));
   drupal_goto("admin/reports/inbound-links");
 }
