@@ -27,6 +27,71 @@ function inbound_checker_form_settings() {
 }
 
 /**
+ * Form callback for site entry add/edit form.
+ *
+ * @param $form_state
+ *   Known form state array as provided bu drupal_get_form().
+ * @param $ic
+ *   Inbound checker object. If provided it will be the edit form.
+ *
+ * @return
+ *   Defined form array.
+ */
+function inbound_checker_form($form_state, $ic = NULL) {
+  $form = array();
+  $form['inbound_checker_site_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website name'),
+    '#description' => t('Name of the external website you wish to check.'),
+    '#required' => TRUE,
+    '#default_value' => isset($ic->site_name) ? $ic->site_name : '',
+  );
+
+  $form['inbound_checker_site_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Website address'),
+    '#description' => t('The external site URL to seek the keyword in. e.g.:‌ http://www.example.com'),
+    '#required' => TRUE,
+    '#default_value' => isset($ic->site_address) ? $ic->site_address : '',
+  );
+
+  $form['inbound_checker_site_expiry'] = array(
+    '#type' => 'date',
+    '#title' => t('Expiry date'),
+    '#description' => t('Specify the date in which your subscription (if any) will be expired.'),
+    // Alter the year range.
+    '#after_build' => array('_inbound_checker_date_after_build'),
+    '#default_value' => isset($ic->expiry) ? array(
+      'year' => date('Y', $ic->expiry),
+      'month' => date('m', $ic->expiry),
+      'day' => date('j', $ic->expiry),
+    ) : '',
+  );
+
+  $form['inbound_checker_link_price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link price'),
+    '#description' => t('The link price'),
+    '#required' => FALSE,
+    '#default_value' => isset($ic->price) ? $ic->price : '',
+  );
+
+  $form['inbound_checker_id'] = array(
+    '#type' => 'hidden',
+    '#required' => FALSE,
+    '#default_value' => isset($ic->icid) ? $ic->icid : '',
+  );
+
+  $form['op'] = array(
+    '#type' => 'submit',
+    '#value' => isset($ic) ? t('Edit') : t('Add'),
+    '#name' => isset($ic) ? 'edit' : 'add',
+  );
+
+  return $form;
+}
+
+/**
  * Validation callback for site add form.
  */
 function inbound_checker_form_validate($form, &$form_state) {
