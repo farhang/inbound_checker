@@ -8,6 +8,16 @@
 
 // TODO: @farhang: Implement hook_help().
 
+
+
+/**
+ * Implements hook_init().
+ */
+function inbound_checker_init() {
+  drupal_add_css(drupal_get_path('module', 'inbound_checker') .'/css/style.css');
+  return '';
+}
+
 /**
  * Implements hook_perm().
  */

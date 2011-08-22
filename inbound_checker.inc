@@ -183,7 +183,7 @@ function inbound_checker_form_list() {
  * Validation callback for sites list form.
  */
 function inbound_checker_form_list_validate($form, &$form_state) {
-  // Check the keyword text field in settings tab for not empty.
+  // Check the keyword text field in settings tab for it isn't empty.
   if (!variable_get('inbound_checker_keyword', '')) {
     form_set_error('inbound_checker_check_zeros', t('Please fill the keyword textfield in settings tab.'));
   }
