@@ -198,33 +198,6 @@ function inbound_checker_form_list_validate($form, &$form_state) {
 }
 
 /**
- * Submission callback for sites list form.
- */
-function inbound_checker_form_list_submit($form, &$form_state) {
-  // TODO: @sepehr: Check the logic.
-  // FIX: @farhang: When zero links checkbox is checked, nothing will happen through the batch process.
-  // FIX: @farhang: Google/Alexa pageranks calculation failure.
-  $batch = array(
-    'operations' => array(),
-    'title' => t('Inbound Links Checking...'),
-    'init_message' => t('Initializing inbound link checking...'),
-    'error_message' => t('An error occured while checking inbound links.'),
-    'progress_message' => t('@current out of @total links has been checked, @remaining remaining. (@percentage%)'),
-  );
-
-  // TODO: @sepehr: Use module's API.
-  $results = db_query("SELECT * FROM {inbound_checker}");
-
-  while ($result = db_fetch_object($results)) {
-    if (($result->icid == 0 && $form_state['values']['inbound_checker_check_zeros']) || (!$form_state['values']['inbound_checker_check_zeros'])) {
-      $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result));
-    }
-  }
-
-  batch_set($batch);
-}
-
-/**
  * Date field after_build callback to workaround the date field stupid limitation.
  *
  * @param $form_element

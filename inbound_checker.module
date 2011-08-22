@@ -104,12 +104,17 @@ function inbound_checker_form_list_submit($form, &$form_state) {
   // TODO: @sepehr: Use module's API.
   $results = db_query("SELECT * FROM {inbound_checker}");
 
+
   while ($result = db_fetch_object($results)) {
-    if (($result->icid == 0 && $form_state['values']['inbound_checker_check_zeros']) || (!$form_state['values']['inbound_checker_check_zeros'])) {
+    if ($form_state['values']['inbound_checker_check_zeros']) {
+      if ($result->count == 0) {
+        $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result));
+      }
+    }
+    else {
       $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result));
     }
   }
-
   batch_set($batch);
 }
 
