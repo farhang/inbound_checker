@@ -91,8 +91,6 @@ function inbound_checker_cron() {
  */
 function inbound_checker_form_list_submit($form, &$form_state) {
   // TODO: @sepehr: Check the logic.
-  // FIX: @farhang: When zero links checkbox is checked, nothing will happen through the batch process.
-  // FIX: @farhang: Google/Alexa pageranks calculation failure.
   $batch = array(
     'operations' => array(),
     'title' => t('Inbound Links Checking...'),
@@ -114,6 +112,11 @@ function inbound_checker_form_list_submit($form, &$form_state) {
     else {
       $batch['operations'][] = array('_inbound_checker_getlinks_batch', array($result));
     }
+  }
+  $to_fetch = variable_get('sitestats_getstats', array());
+  if (!$to_fetch['PR']) {
+    global $base_url;
+    drupal_set_message ("To see the Alexa PR & Googlr PR of the domains please check the check boxes from sitestats module settings from <a href=\"$base_url/admin/settings/sitestats\" target=\"_blank\">here</a>."); 
   }
   batch_set($batch);
 }
